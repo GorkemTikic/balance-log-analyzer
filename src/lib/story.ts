@@ -3,8 +3,16 @@
 import { type LocalLang, TEXTS, friendlyLabel, LANG_CONFIG } from "./i18n";
 
 export type Row = {
-  id: string; uid: string; asset: string; type: string; amount: number;
-  time: string; ts: number; symbol: string; extra: string; raw: string;
+  id: string;
+  uid: string;
+  asset: string;
+  type: string;
+  amount: number;
+  time: string;
+  ts: number;
+  symbol: string;
+  extra: string;
+  raw: string;
 };
 
 export type SummaryRow = { label: string; asset: string; in: number; out: number; net: number };
@@ -13,14 +21,13 @@ export type SummaryRow = { label: string; asset: string; in: number; out: number
 import { fmt, fmtTrim, fmtFinal, fmtSigned as fmtSignedPlus } from "./format";
 import { nonZero } from "./format"; // Wait, I didn't add nonZero to format.ts yet.
 
-// Let's add nonZero to format.ts in next step or now? 
-// Actually I can just inline it or add it to format.ts. 
+// Let's add nonZero to format.ts in next step or now?
+// Actually I can just inline it or add it to format.ts.
 // Ideally I should update format.ts to include nonZero first.
-
 
 /* Template: "Hello {NAME}" */
 function tFormat(s: string, map: Record<string, string>) {
-  return s.replace(/\{(\w+)\}/g, (_, k) => (map[k] ?? ""));
+  return s.replace(/\{(\w+)\}/g, (_, k) => map[k] ?? "");
 }
 
 /* -------- Date Formatting (No milliseconds, with Offset) -------- */
@@ -76,7 +83,7 @@ export const TYPE = {
   LIEN_CLAIM: "LIEN_CLAIM",
   INTERNAL_COMMISSION_REBATE: "INTERNAL_COMMISSION_REBATE",
   FEE_RETURN: "FEE_RETURN",
-  FUTURES_PRESENT_SPONSOR_REFUND: "FUTURES_PRESENT_SPONSOR_REFUND",
+  FUTURES_PRESENT_SPONSOR_REFUND: "FUTURES_PRESENT_SPONSOR_REFUND"
 } as const;
 
 type Totals = Record<string, { pos: number; neg: number; net: number }>;
@@ -85,7 +92,8 @@ export function totalsByType(rows: Row[]) {
   for (const r of rows) {
     const tt = (map[r.type] = map[r.type] || {});
     const m = (tt[r.asset] = tt[r.asset] || { pos: 0, neg: 0, net: 0 });
-    if (r.amount >= 0) m.pos += r.amount; else m.neg += Math.abs(r.amount);
+    if (r.amount >= 0) m.pos += r.amount;
+    else m.neg += Math.abs(r.amount);
     m.net += r.amount;
   }
   return map;
@@ -94,7 +102,7 @@ export function totalsByType(rows: Row[]) {
 /* -------- Parse final balances from Agent Audit (keeps math intact) -------- */
 export function parseFinalBalancesFromAudit(audit: string): { asset: string; amount: number }[] {
   const lines = audit.split(/\r?\n/);
-  const startIdx = lines.findIndex(l => l.trim().toLowerCase().startsWith("final expected balances"));
+  const startIdx = lines.findIndex((l) => l.trim().toLowerCase().startsWith("final expected balances"));
   if (startIdx === -1) return [];
   const out: { asset: string; amount: number }[] = [];
   for (let i = startIdx + 1; i < lines.length; i++) {
@@ -115,7 +123,10 @@ export function parseUTC(s: string): number | undefined {
 
 export function parseBaseline(s: string): { map?: Record<string, number>; error?: string } {
   const out: Record<string, number> = {};
-  const lines = s.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+  const lines = s
+    .split(/\r?\n/)
+    .map((l) => l.trim())
+    .filter(Boolean);
   if (!lines.length) return { map: undefined };
 
   // Accept "ASSET amount" or "amount ASSET"; amount may be decimal or scientific (e.g., 5.4e-7)
@@ -125,9 +136,15 @@ export function parseBaseline(s: string): { map?: Record<string, number>; error?
 
   for (const line of lines) {
     let m = line.match(PAT1);
-    if (m) { out[m[1].toUpperCase()] = (out[m[1].toUpperCase()] || 0) + Number(m[2]); continue; }
+    if (m) {
+      out[m[1].toUpperCase()] = (out[m[1].toUpperCase()] || 0) + Number(m[2]);
+      continue;
+    }
     m = line.match(PAT2);
-    if (m) { out[m[2].toUpperCase()] = (out[m[2].toUpperCase()] || 0) + Number(m[1]); continue; }
+    if (m) {
+      out[m[2].toUpperCase()] = (out[m[2].toUpperCase()] || 0) + Number(m[1]);
+      continue;
+    }
     return { error: `Could not parse: "${line}"` };
   }
   return { map: out };
@@ -161,7 +178,9 @@ export function composeNarrative(opts: {
 
   // Initial balances line (varsa tüm varlıkları listele)
   if (baselineMap && Object.keys(baselineMap).length) {
-    const items = Object.keys(baselineMap).sort().map(a => `${a} ${fmtTrim(baselineMap[a])}`);
+    const items = Object.keys(baselineMap)
+      .sort()
+      .map((a) => `${a} ${fmtTrim(baselineMap[a])}`);
     lines.push(`${T.initialBalancesIntro} ${items.join("  •  ")}`);
   }
 
@@ -173,14 +192,19 @@ export function composeNarrative(opts: {
     const amtStr = fmtTrim(transferAtStart.amount);
     const before = baselineMap?.[transferAtStart.asset];
     const after = typeof before === "number" ? before + transferAtStart.amount : undefined;
-    const transferLine = transferAtStart.amount >= 0
-      ? tFormat(T.transferSentenceTo, { AMOUNT: amtStr, ASSET: transferAtStart.asset })
-      : tFormat(T.transferSentenceFrom, { AMOUNT: amtStr, ASSET: transferAtStart.asset });
+    const transferLine =
+      transferAtStart.amount >= 0
+        ? tFormat(T.transferSentenceTo, { AMOUNT: amtStr, ASSET: transferAtStart.asset })
+        : tFormat(T.transferSentenceFrom, { AMOUNT: amtStr, ASSET: transferAtStart.asset });
     let line = `${pretty} - ${transferLine}`;
     if (typeof before === "number" && typeof after === "number") {
-      line += " " + tFormat(T.changedFromTo, {
-        BEFORE: fmtTrim(before), AFTER: fmtTrim(after), ASSET: transferAtStart.asset,
-      });
+      line +=
+        " " +
+        tFormat(T.changedFromTo, {
+          BEFORE: fmtTrim(before),
+          AFTER: fmtTrim(after),
+          ASSET: transferAtStart.asset
+        });
     } else {
       line += " " + T.balanceChanged;
     }
@@ -194,13 +218,13 @@ export function composeNarrative(opts: {
 
   // Sorting order hint
   // We map the friendly names to a priority index if possible, but simplest is to sort by keys
-  // but "groups" keys are already localized friendly labels from StoryDrawer? 
+  // but "groups" keys are already localized friendly labels from StoryDrawer?
   // Wait, StoryDrawer calls `friendlyLabel(r.label, lang)` BEFORE creating the `groups` object.
   // So `groups` keys ARE the friendly strings.
   // We will just sort them alphabetically or by a known order if we can matching them back.
-  // Since they are already localized, robust sorting is hard without reverse lookup. 
+  // Since they are already localized, robust sorting is hard without reverse lookup.
   // We'll trust standard sort or the order in `groups` iteration if we want.
-  // But let's try to maintain a "logical" order if possible. 
+  // But let's try to maintain a "logical" order if possible.
   // For now, alphabetical on friendly label is acceptable fallback.
   const groupNames = Object.keys(groups).sort();
 
@@ -217,8 +241,8 @@ export function composeNarrative(opts: {
 
     // Using `as any` because TS doesn't know specific keys on T usually, but we know T is one of TEXTS_*
     const T_any = T as any;
-    const isSwap = (g === T_any.COIN_SWAP_MIX || g === T_any.AUTO_EXCHANGE_MIX);
-    const isFunding = (g === T_any.FUNDING_FEE);
+    const isSwap = g === T_any.COIN_SWAP_MIX || g === T_any.AUTO_EXCHANGE_MIX;
+    const isFunding = g === T_any.FUNDING_FEE;
 
     lines.push(g);
 
@@ -290,7 +314,7 @@ export function buildSummaryRows(rows: Row[]): SummaryRow[] {
 }
 
 // ---------- Agent audit text (Keep in UTC+0 generally, or match user offset?)
-// User asked to adjust narrative based on offset. Audit is usually technical. 
+// User asked to adjust narrative based on offset. Audit is usually technical.
 // "Agent Balance Audit" - lets keep it technical UTC+0 or maybe apply same offset?
 // To be safe, I'll apply the same offset logic to Audit timestamps for consistency if "startTs" is passed.
 // But `buildAudit` takes `anchorTs` (number). I'll stick to UTC strings in audit unless specifically requested to change audit.
@@ -308,8 +332,7 @@ export function buildAudit(
   }
 ): string {
   const { anchorTs, endTs, baseline, anchorTransfer } = params;
-  const inRange = rows.filter(r => r.ts >= anchorTs && (endTs ? r.ts <= endTs : true))
-    .sort((a, b) => a.ts - b.ts);
+  const inRange = rows.filter((r) => r.ts >= anchorTs && (endTs ? r.ts <= endTs : true)).sort((a, b) => a.ts - b.ts);
 
   const t = totalsByType(inRange);
 
@@ -317,12 +340,15 @@ export function buildAudit(
   lines.push("Agent Balance Audit");
   lines.push(`Anchor (UTC+0): ${formatTime(anchorTs, 0)}${endTs ? `  →  End: ${formatTime(endTs, 0)}` : ""}`);
   if (baseline && Object.keys(baseline).length) {
-    const bl = Object.keys(baseline).map(a => `${a} ${fmt(baseline[a])}`).join("  •  ");
+    const bl = Object.keys(baseline)
+      .map((a) => `${a} ${fmt(baseline[a])}`)
+      .join("  •  ");
     lines.push("", "Baseline (before anchor):", `  • ${bl}`);
   } else {
     lines.push("", "Baseline: not provided (rolling from zero).");
   }
-  if (anchorTransfer) lines.push("", `Applied anchor transfer: ${fmtSignedPlus(anchorTransfer.amount)} ${anchorTransfer.asset}`);
+  if (anchorTransfer)
+    lines.push("", `Applied anchor transfer: ${fmtSignedPlus(anchorTransfer.amount)} ${anchorTransfer.asset}`);
 
   lines.push("", "Activity after anchor:");
   const perType: string[] = [];
@@ -350,8 +376,9 @@ export function buildAudit(
     for (const a of Object.keys(m)) assetNet[a] = (assetNet[a] || 0) + m[a].net;
   }
   lines.push("", "Net effect (after anchor):");
-  const netLines = Object.keys(assetNet).filter(a => nonZero(assetNet[a]))
-    .map(a => `  • ${a}  ${fmtSignedPlus(assetNet[a])}`);
+  const netLines = Object.keys(assetNet)
+    .filter((a) => nonZero(assetNet[a]))
+    .map((a) => `  • ${a}  ${fmtSignedPlus(assetNet[a])}`);
   lines.push(...(netLines.length ? netLines : ["  • 0"]));
 
   if (baseline && Object.keys(baseline).length) {
@@ -365,9 +392,9 @@ export function buildAudit(
     }
 
     const finalLines = Object.keys(final)
-      .filter(a => nonZero(final[a]))
+      .filter((a) => nonZero(final[a]))
       .sort()
-      .map(a => `  • ${a}  ${fmt(final[a])}`);
+      .map((a) => `  • ${a}  ${fmt(final[a])}`);
     if (finalLines.length) {
       lines.push("", "Final expected balances:", ...finalLines);
     }

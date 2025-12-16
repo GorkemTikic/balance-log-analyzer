@@ -13,8 +13,7 @@ import { fmtTrim } from "@/lib/format";
 function parseSwapText(l: Line) {
   const text = l.text || "";
   const guess = text.slice(0, 19);
-  const date =
-    /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/.test(guess) ? guess : l.time;
+  const date = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/.test(guess) ? guess : l.time;
 
   const afterDash = text.split("—")[1] || "";
   const parts = afterDash.split("→");
@@ -39,11 +38,7 @@ function copyRowsAsText(headers: string[], rows: Array<[string, string, string]>
 }
 
 /** Render rows to a canvas and download as PNG (no DOM screenshot). */
-function exportRowsAsPNG(
-  headers: string[],
-  rows: Array<[string, string, string]>,
-  filename: string
-) {
+function exportRowsAsPNG(headers: string[], rows: Array<[string, string, string]>, filename: string) {
   const padX = 14;
   const padY = 10;
   const rowH = 24;
@@ -63,10 +58,7 @@ function exportRowsAsPNG(
 
   const cols = [0, 1, 2].map((i) => {
     const headerW = measure(headers[i], true);
-    const dataW = Math.max(
-      ...rows.map((r) => measure(r[i] || "")),
-      0
-    );
+    const dataW = Math.max(...rows.map((r) => measure(r[i] || "")), 0);
     return Math.max(headerW, dataW) + padX * 2;
   });
 
@@ -131,7 +123,7 @@ export default function SwapsEvents({
   coinSwapLines,
   autoExLines,
   eventsOrdersByAsset,
-  eventsPayoutsByAsset,
+  eventsPayoutsByAsset
 }: {
   coinSwapLines: Line[];
   autoExLines: Line[];
@@ -139,10 +131,7 @@ export default function SwapsEvents({
   eventsPayoutsByAsset: TotalsMap;
 }) {
   const assets = Array.from(
-    new Set([
-      ...Object.keys(eventsOrdersByAsset || {}),
-      ...Object.keys(eventsPayoutsByAsset || {}),
-    ])
+    new Set([...Object.keys(eventsOrdersByAsset || {}), ...Object.keys(eventsPayoutsByAsset || {})])
   ).sort();
 
   const hasCoin = coinSwapLines && coinSwapLines.length > 0;
@@ -165,7 +154,9 @@ export default function SwapsEvents({
       {hasCoin && (
         <div className="card">
           <div className="section-head" style={{ alignItems: "center", justifyContent: "space-between" }}>
-            <h3 className="section-title" style={{ marginBottom: 0 }}>Coin Swaps</h3>
+            <h3 className="section-title" style={{ marginBottom: 0 }}>
+              Coin Swaps
+            </h3>
             <div className="btn-row">
               <button
                 className="btn small"
@@ -173,10 +164,7 @@ export default function SwapsEvents({
               >
                 Export PNG
               </button>
-              <button
-                className="btn small"
-                onClick={() => copyRowsAsText(["Date", "Out", "In"], coinRows)}
-              >
+              <button className="btn small" onClick={() => copyRowsAsText(["Date", "Out", "In"], coinRows)}>
                 Copy
               </button>
             </div>
@@ -208,7 +196,9 @@ export default function SwapsEvents({
       {hasAuto && (
         <div className="card" style={{ borderLeft: "4px solid #9333ea" }}>
           <div className="section-head" style={{ alignItems: "center", justifyContent: "space-between" }}>
-            <h3 className="section-title" style={{ marginBottom: 0, color: "#9333ea" }}>Auto-Exchange</h3>
+            <h3 className="section-title" style={{ marginBottom: 0, color: "#9333ea" }}>
+              Auto-Exchange
+            </h3>
             <div className="btn-row">
               <button
                 className="btn small"
@@ -216,10 +206,7 @@ export default function SwapsEvents({
               >
                 Export PNG
               </button>
-              <button
-                className="btn small"
-                onClick={() => copyRowsAsText(["Date", "Out", "In"], autoRows)}
-              >
+              <button className="btn small" onClick={() => copyRowsAsText(["Date", "Out", "In"], autoRows)}>
                 Copy
               </button>
             </div>

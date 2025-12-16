@@ -37,14 +37,13 @@ export default function RpnTable({ title, map }: { title: string; map: TotalsMap
 
   return (
     <div className="card">
-      <h3 className="section-title" style={{ marginBottom: 8 }}>{title}</h3>
+      <h3 className="section-title" style={{ marginBottom: 8 }}>
+        {title}
+      </h3>
       {rows.length === 0 ? (
         <div className="muted small">No activity.</div>
       ) : (
-        <table
-          className="table mono small"
-          style={{ width: "100%", borderCollapse: "separate", borderSpacing: 0 }}
-        >
+        <table className="table mono small" style={{ width: "100%", borderCollapse: "separate", borderSpacing: 0 }}>
           <thead>
             <tr>
               <th style={{ textAlign: "left" }}>Asset</th>
@@ -59,15 +58,10 @@ export default function RpnTable({ title, map }: { title: string; map: TotalsMap
               parts.push(`= ${fmtTrim(v.net)}`);
 
               return (
-                <tr
-                  key={asset}
-                  style={{ background: i % 2 ? "rgba(255,255,255,0.02)" : "transparent" }}
-                >
+                <tr key={asset} style={{ background: i % 2 ? "rgba(255,255,255,0.02)" : "transparent" }}>
                   <td style={{ fontWeight: 700 }}>{asset}</td>
                   <td>
-                    <span style={{ whiteSpace: "pre-wrap" }}>
-                      {parts.join("  ")}
-                    </span>
+                    <span style={{ whiteSpace: "pre-wrap" }}>{parts.join("  ")}</span>
                   </td>
                 </tr>
               );

@@ -22,7 +22,7 @@ type AssetStats = {
   funding: number;
   otherFees: number;
   totalPnl: number; // Realized PnL (Gross)
-  netPnl: number;   // Realized + Comm + Funding + Other
+  netPnl: number; // Realized + Comm + Funding + Other
   bestDay: { day: string; val: number } | null;
   worstDay: { day: string; val: number } | null;
 };
@@ -31,13 +31,16 @@ export default function FilterBar({ rows }: { rows: Row[] }) {
   const [isOpen, setIsOpen] = useState(false);
 
   const assetStats = useMemo(() => {
-    const byAsset: Record<string, {
-      commission: number;
-      funding: number;
-      otherFees: number;
-      pnl: number;
-      daily: Record<string, number>;
-    }> = {};
+    const byAsset: Record<
+      string,
+      {
+        commission: number;
+        funding: number;
+        otherFees: number;
+        pnl: number;
+        daily: Record<string, number>;
+      }
+    > = {};
 
     for (const r of rows) {
       if (!r.asset) continue;
@@ -80,7 +83,7 @@ export default function FilterBar({ rows }: { rows: Row[] }) {
         totalPnl: d.pnl,
         netPnl,
         bestDay: days.length ? bestDay : null,
-        worstDay: days.length ? worstDay : null,
+        worstDay: days.length ? worstDay : null
       });
     }
 
@@ -93,7 +96,15 @@ export default function FilterBar({ rows }: { rows: Row[] }) {
     <div className="card" style={{ marginTop: 12 }}>
       <button
         className="section-head"
-        style={{ width: "100%", background: "none", border: "none", cursor: "pointer", display: "flex", justifyContent: "space-between", padding: 0 }}
+        style={{
+          width: "100%",
+          background: "none",
+          border: "none",
+          cursor: "pointer",
+          display: "flex",
+          justifyContent: "space-between",
+          padding: 0
+        }}
         onClick={() => setIsOpen(!isOpen)}
       >
         <h3 className="section-title">Performance Highlights</h3>
@@ -108,10 +119,11 @@ export default function FilterBar({ rows }: { rows: Row[] }) {
             const hasOther = Math.abs(stats.otherFees) > 0.0001;
 
             return (
-              <div key={stats.asset} style={{ marginBottom: 24, borderTop: "1px solid rgba(255,255,255,0.05)", paddingTop: 16 }}>
-                <h4 style={{ margin: "0 0 16px", color: "#38bdf8", fontSize: 16 }}>
-                  {stats.asset} Performance
-                </h4>
+              <div
+                key={stats.asset}
+                style={{ marginBottom: 24, borderTop: "1px solid rgba(255,255,255,0.05)", paddingTop: 16 }}
+              >
+                <h4 style={{ margin: "0 0 16px", color: "#38bdf8", fontSize: 16 }}>{stats.asset} Performance</h4>
                 <div className="grid-2">
                   {/* Fee Efficiency */}
                   <div style={{ background: "rgba(255,255,255,0.03)", borderRadius: 12, padding: 16 }}>
@@ -139,14 +151,18 @@ export default function FilterBar({ rows }: { rows: Row[] }) {
                         <div style={{ marginBottom: 12 }}>
                           <div style={{ fontSize: 12, color: "#94a3b8", marginBottom: 2 }}>BEST DAY</div>
                           <div style={{ display: "flex", alignItems: "baseline", gap: 12 }}>
-                            <div className="text-green" style={{ fontSize: 18, fontWeight: 700 }}>{fmtMoney(stats.bestDay.val, "")}</div>
+                            <div className="text-green" style={{ fontSize: 18, fontWeight: 700 }}>
+                              {fmtMoney(stats.bestDay.val, "")}
+                            </div>
                             <div style={{ fontSize: 14, color: "#e2e8f0" }}>{stats.bestDay.day}</div>
                           </div>
                         </div>
                         <div>
                           <div style={{ fontSize: 12, color: "#94a3b8", marginBottom: 2 }}>WORST DAY</div>
                           <div style={{ display: "flex", alignItems: "baseline", gap: 12 }}>
-                            <div className="text-red" style={{ fontSize: 18, fontWeight: 700 }}>{fmtMoney(stats.worstDay.val, "")}</div>
+                            <div className="text-red" style={{ fontSize: 18, fontWeight: 700 }}>
+                              {fmtMoney(stats.worstDay.val, "")}
+                            </div>
                             <div style={{ fontSize: 14, color: "#e2e8f0" }}>{stats.worstDay.day}</div>
                           </div>
                         </div>
@@ -165,10 +181,28 @@ export default function FilterBar({ rows }: { rows: Row[] }) {
   );
 }
 
-function RowLine({ label, val, asset, bold, colored }: { label: string; val: number; asset: string; bold?: boolean; colored?: boolean }) {
+function RowLine({
+  label,
+  val,
+  asset,
+  bold,
+  colored
+}: {
+  label: string;
+  val: number;
+  asset: string;
+  bold?: boolean;
+  colored?: boolean;
+}) {
   const cls = colored
-    ? (val >= 0 ? "text-green" : "text-red")
-    : (val > 0 ? "text-green" : (val < 0 ? "text-red" : "text-bright"));
+    ? val >= 0
+      ? "text-green"
+      : "text-red"
+    : val > 0
+      ? "text-green"
+      : val < 0
+        ? "text-red"
+        : "text-bright";
   return (
     <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
       <span style={{ color: "#e2e8f0" }}>{label}</span>

@@ -3,7 +3,7 @@ import React, { useState } from "react";
 
 export default function GridPasteBox({
   onUseTSV,
-  onError,
+  onError
 }: {
   onUseTSV: (tsv: string) => void;
   onError: (msg: string) => void;
@@ -95,7 +95,9 @@ export default function GridPasteBox({
       </div>
 
       <div className="btn-row" style={{ marginTop: 8 }}>
-        <button className="btn btn-dark" onClick={useAndParse}>Use & Parse</button>
+        <button className="btn btn-dark" onClick={useAndParse}>
+          Use & Parse
+        </button>
         <span className="muted">{info}</span>
       </div>
 

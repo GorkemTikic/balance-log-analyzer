@@ -10,8 +10,18 @@ import StoryRaw from "./story/StoryRaw";
 import { type StoryInputState } from "./story/types";
 
 export default function StoryDrawer({
-  open, onClose, rows, t0, t1
-}: { open: boolean; onClose: () => void; rows: Row[]; t0?: string; t1?: string; }) {
+  open,
+  onClose,
+  rows,
+  t0,
+  t1
+}: {
+  open: boolean;
+  onClose: () => void;
+  rows: Row[];
+  t0?: string;
+  t1?: string;
+}) {
   const [tab, setTab] = useState<"narrative" | "audit" | "charts" | "raw">("narrative");
 
   // Shared Inputs (persistent across tabs)
@@ -30,16 +40,47 @@ export default function StoryDrawer({
   const props = { rows, lang, inputs: inputState, setters };
 
   return (
-    <div aria-modal role="dialog" onClick={onClose}
-      style={{ position: "fixed", inset: 0, zIndex: 50, background: "rgba(0,0,0,0.6)", backdropFilter: "blur(4px)", display: "flex", justifyContent: "flex-end" }}>
-      <div onClick={(e) => e.stopPropagation()} className="card"
-        style={{ width: "min(980px, 100%)", height: "100%", margin: 0, borderRadius: 0, overflow: "auto", background: "#1e293b", boxShadow: "0 10px 30px rgba(0,0,0,.5)", borderLeft: "1px solid rgba(255,255,255,0.1)" }}>
-
+    <div
+      aria-modal
+      role="dialog"
+      onClick={onClose}
+      style={{
+        position: "fixed",
+        inset: 0,
+        zIndex: 50,
+        background: "rgba(0,0,0,0.6)",
+        backdropFilter: "blur(4px)",
+        display: "flex",
+        justifyContent: "flex-end"
+      }}
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="card"
+        style={{
+          width: "min(980px, 100%)",
+          height: "100%",
+          margin: 0,
+          borderRadius: 0,
+          overflow: "auto",
+          background: "#1e293b",
+          boxShadow: "0 10px 30px rgba(0,0,0,.5)",
+          borderLeft: "1px solid rgba(255,255,255,0.1)"
+        }}
+      >
         {/* Header */}
         <div className="section-head sticky-top" style={{ flexWrap: "wrap", gap: 8, paddingBottom: 16 }}>
-          <h3 className="section-title" style={{ fontSize: 20, color: "#f8fafc" }}>{T.title}</h3>
+          <h3 className="section-title" style={{ fontSize: 20, color: "#f8fafc" }}>
+            {T.title}
+          </h3>
           <div className="btn-row" style={{ gap: 8, flexWrap: "wrap" }}>
-            <select className="btn" style={{ background: "#111827", color: "#fff", borderColor: "rgba(255,255,255,0.2)" }} value={lang} onChange={(e) => setLang(e.target.value as LocalLang)} title={T.lang}>
+            <select
+              className="btn"
+              style={{ background: "#111827", color: "#fff", borderColor: "rgba(255,255,255,0.2)" }}
+              value={lang}
+              onChange={(e) => setLang(e.target.value as LocalLang)}
+              title={T.lang}
+            >
               <option value="en">English (UTC+0)</option>
               {/* <option value="tr">Türkçe (UTC+3)</option> ... can add back if needed, keep simplified for now or copy full list */}
               <option value="tr">Türkçe (UTC+3)</option>
@@ -52,7 +93,9 @@ export default function StoryDrawer({
               <option value="zh">中文 (UTC+8)</option>
               <option value="ko">한국어 (UTC+9)</option>
             </select>
-            <button className="btn" onClick={onClose}>{T.close}</button>
+            <button className="btn" onClick={onClose}>
+              {T.close}
+            </button>
           </div>
         </div>
 
@@ -71,7 +114,6 @@ export default function StoryDrawer({
         {tab === "audit" && <StoryAudit {...props} />}
         {tab === "charts" && <StoryCharts {...props} />}
         {tab === "raw" && <StoryRaw {...props} />}
-
       </div>
     </div>
   );
@@ -80,10 +122,12 @@ export default function StoryDrawer({
 function TabBtn({ id, label, current, set }: { id: any; label: string; current: string; set: (v: any) => void }) {
   const active = current === id;
   return (
-    <button className="btn" onClick={() => set(id)}
-      style={{ background: active ? "#38bdf8" : "transparent", color: active ? "#0f172a" : "#94a3b8", border: "none" }}>
+    <button
+      className="btn"
+      onClick={() => set(id)}
+      style={{ background: active ? "#38bdf8" : "transparent", color: active ? "#0f172a" : "#94a3b8", border: "none" }}
+    >
       {label}
     </button>
   );
 }
-

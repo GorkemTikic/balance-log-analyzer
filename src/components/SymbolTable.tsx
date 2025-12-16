@@ -42,9 +42,7 @@ export default function SymbolTable({ rows }: { rows: Row[] }) {
       const realized = rs.filter((r) => r.type === "REALIZED_PNL");
       const funding = rs.filter((r) => r.type === "FUNDING_FEE");
       const commission = rs.filter((r) => r.type === "COMMISSION");
-      const insurance = rs.filter(
-        (r) => r.type === "INSURANCE_CLEAR" || r.type === "LIQUIDATION_FEE"
-      );
+      const insurance = rs.filter((r) => r.type === "INSURANCE_CLEAR" || r.type === "LIQUIDATION_FEE");
 
       const rMap = sumByAsset(realized);
       const fMap = sumByAsset(funding);
@@ -57,11 +55,13 @@ export default function SymbolTable({ rows }: { rows: Row[] }) {
           if (v.pos === 0 && v.neg === 0 && v.net === 0) delete (m as any)[k];
         }
       };
-      prune(rMap); prune(fMap); prune(cMap); prune(iMap);
+      prune(rMap);
+      prune(fMap);
+      prune(cMap);
+      prune(iMap);
 
       const any =
-        Object.keys(rMap).length || Object.keys(fMap).length ||
-        Object.keys(cMap).length || Object.keys(iMap).length;
+        Object.keys(rMap).length || Object.keys(fMap).length || Object.keys(cMap).length || Object.keys(iMap).length;
 
       if (any) out.push({ symbol: sym, realized: rMap, funding: fMap, commission: cMap, insurance: iMap });
     }
@@ -73,9 +73,7 @@ export default function SymbolTable({ rows }: { rows: Row[] }) {
   const buildBlockText = (b: Block) => {
     const lines: string[] = [];
     const dispSym =
-      b.symbol === "ADMIN_CLEARING" || b.symbol === "CHAT_APPLY_CLEARING"
-        ? "Insurance Fund Clearance"
-        : b.symbol;
+      b.symbol === "ADMIN_CLEARING" || b.symbol === "CHAT_APPLY_CLEARING" ? "Insurance Fund Clearance" : b.symbol;
     const sect = (title: string, m: TotalsMap) => {
       const keys = Object.keys(m).sort();
       if (!keys.length) return;
@@ -99,15 +97,12 @@ export default function SymbolTable({ rows }: { rows: Row[] }) {
       ...Object.keys(b.realized),
       ...Object.keys(b.funding),
       ...Object.keys(b.commission),
-      ...Object.keys(b.insurance),
+      ...Object.keys(b.insurance)
     ]);
     const finals: Record<string, number> = {};
     for (const a of allAssets) {
       finals[a] =
-        (b.realized[a]?.net || 0) +
-        (b.funding[a]?.net || 0) +
-        (b.commission[a]?.net || 0) +
-        (b.insurance[a]?.net || 0);
+        (b.realized[a]?.net || 0) + (b.funding[a]?.net || 0) + (b.commission[a]?.net || 0) + (b.insurance[a]?.net || 0);
     }
     const keys = Object.keys(finals).sort();
     if (keys.length) {
@@ -132,8 +127,8 @@ export default function SymbolTable({ rows }: { rows: Row[] }) {
       // Actions sütununu (son sütun) kaldır: colgroup, thead, tbody
       const lastCol = clone.querySelector("colgroup col:last-child");
       if (lastCol && lastCol.parentElement) lastCol.parentElement.removeChild(lastCol);
-      clone.querySelectorAll("thead tr").forEach(tr => tr.lastElementChild?.remove());
-      clone.querySelectorAll("tbody tr").forEach(tr => tr.lastElementChild?.remove());
+      clone.querySelectorAll("thead tr").forEach((tr) => tr.lastElementChild?.remove());
+      clone.querySelectorAll("tbody tr").forEach((tr) => tr.lastElementChild?.remove());
 
       // Klonu sahne dışına yerleştir, tam genişlik/yükseklik ver
       clone.style.position = "fixed";
@@ -154,7 +149,7 @@ export default function SymbolTable({ rows }: { rows: Row[] }) {
         width: fullW,
         height: fullH,
         scrollX: 0,
-        scrollY: 0,
+        scrollY: 0
       });
       document.body.removeChild(clone);
 
@@ -181,7 +176,9 @@ export default function SymbolTable({ rows }: { rows: Row[] }) {
   if (!blocks.length) {
     return (
       <div className="card">
-        <div className="section-head"><h3 className="section-title">By Symbol (Futures, not Events)</h3></div>
+        <div className="section-head">
+          <h3 className="section-title">By Symbol (Futures, not Events)</h3>
+        </div>
         <div className="muted">No symbol activity.</div>
       </div>
     );
@@ -190,7 +187,7 @@ export default function SymbolTable({ rows }: { rows: Row[] }) {
   const colStyles = {
     sym: { width: 180 },
     col: { width: 140 }, // PATCHED: 1 yerine 140
-    act: { width: 200 },
+    act: { width: 200 }
   } as const;
 
   const renderMapSimple = (m: TotalsMap) => {
@@ -201,8 +198,18 @@ export default function SymbolTable({ rows }: { rows: Row[] }) {
         {keys.map((k) => {
           const v = m[k];
           const parts: React.ReactNode[] = [];
-          if (v.pos !== 0) parts.push(<span key="p" className="text-green">+{fmt(v.pos)} </span>);
-          if (v.neg !== 0) parts.push(<span key="n" className="text-red">−{fmt(v.neg)} </span>);
+          if (v.pos !== 0)
+            parts.push(
+              <span key="p" className="text-green">
+                +{fmt(v.pos)}{" "}
+              </span>
+            );
+          if (v.neg !== 0)
+            parts.push(
+              <span key="n" className="text-red">
+                −{fmt(v.neg)}{" "}
+              </span>
+            );
           return (
             <div key={k} className="nowrap">
               {k} {parts}
@@ -218,7 +225,7 @@ export default function SymbolTable({ rows }: { rows: Row[] }) {
       ...Object.keys(b.realized),
       ...Object.keys(b.funding),
       ...Object.keys(b.commission),
-      ...Object.keys(b.insurance),
+      ...Object.keys(b.insurance)
     ]);
     const keys = Array.from(allAssets).sort();
     if (!keys.length) return <span className="muted">—</span>;
@@ -246,16 +253,16 @@ export default function SymbolTable({ rows }: { rows: Row[] }) {
       <div className="section-head" style={{ alignItems: "center" }}>
         <h3 className="section-title">By Symbol (Futures, not Events)</h3>
         <div className="btn-row">
-          <button className="btn" onClick={exportWholeTablePNG}>Export PNG</button>
-          <button className="btn" onClick={copyAll}>Copy ALL (text)</button>
+          <button className="btn" onClick={exportWholeTablePNG}>
+            Export PNG
+          </button>
+          <button className="btn" onClick={copyAll}>
+            Copy ALL (text)
+          </button>
         </div>
       </div>
 
-      <div
-        ref={tableWrapRef}
-        className="tablewrap horizontal"
-        style={{ maxHeight: 560, overflow: "auto" }}
-      >
+      <div ref={tableWrapRef} className="tablewrap horizontal" style={{ maxHeight: 560, overflow: "auto" }}>
         <table className="table mono small" style={{ width: "100%", borderCollapse: "separate", borderSpacing: 0 }}>
           <colgroup>
             <col style={{ width: colStyles.sym.width }} />
@@ -269,13 +276,41 @@ export default function SymbolTable({ rows }: { rows: Row[] }) {
           </colgroup>
           <thead>
             <tr>
-              <th style={{ textAlign: "left", position: "sticky", top: 0, background: "#1e293b", whiteSpace: "nowrap" }}>Symbol</th>
-              <th style={{ textAlign: "left", position: "sticky", top: 0, background: "#1e293b", whiteSpace: "nowrap" }}>Realized PnL</th>
-              <th style={{ textAlign: "left", position: "sticky", top: 0, background: "#1e293b", whiteSpace: "nowrap" }}>Funding</th>
-              <th style={{ textAlign: "left", position: "sticky", top: 0, background: "#1e293b", whiteSpace: "nowrap" }}>Trading Fees</th>
-              <th style={{ textAlign: "left", position: "sticky", top: 0, background: "#1e293b", whiteSpace: "nowrap" }}>Insurance Clearance Fee</th>
-              <th style={{ textAlign: "left", position: "sticky", top: 0, background: "#1e293b", whiteSpace: "nowrap" }}>Final Net (All Fees)</th>
-              <th style={{ textAlign: "right", position: "sticky", top: 0, background: "#1e293b", whiteSpace: "nowrap" }}>Actions</th>
+              <th
+                style={{ textAlign: "left", position: "sticky", top: 0, background: "#1e293b", whiteSpace: "nowrap" }}
+              >
+                Symbol
+              </th>
+              <th
+                style={{ textAlign: "left", position: "sticky", top: 0, background: "#1e293b", whiteSpace: "nowrap" }}
+              >
+                Realized PnL
+              </th>
+              <th
+                style={{ textAlign: "left", position: "sticky", top: 0, background: "#1e293b", whiteSpace: "nowrap" }}
+              >
+                Funding
+              </th>
+              <th
+                style={{ textAlign: "left", position: "sticky", top: 0, background: "#1e293b", whiteSpace: "nowrap" }}
+              >
+                Trading Fees
+              </th>
+              <th
+                style={{ textAlign: "left", position: "sticky", top: 0, background: "#1e293b", whiteSpace: "nowrap" }}
+              >
+                Insurance Clearance Fee
+              </th>
+              <th
+                style={{ textAlign: "left", position: "sticky", top: 0, background: "#1e293b", whiteSpace: "nowrap" }}
+              >
+                Final Net (All Fees)
+              </th>
+              <th
+                style={{ textAlign: "right", position: "sticky", top: 0, background: "#1e293b", whiteSpace: "nowrap" }}
+              >
+                Actions
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -287,7 +322,17 @@ export default function SymbolTable({ rows }: { rows: Row[] }) {
                   : b.symbol;
               return (
                 <tr key={b.symbol} style={{ background: i % 2 ? "rgba(255,255,255,0.02)" : "transparent" }}>
-                  <td style={{ textAlign: "left", fontWeight: 700, whiteSpace: "nowrap", wordBreak: "keep-all", minWidth: 180, maxWidth: 180 }} title={displaySymbol}>
+                  <td
+                    style={{
+                      textAlign: "left",
+                      fontWeight: 700,
+                      whiteSpace: "nowrap",
+                      wordBreak: "keep-all",
+                      minWidth: 180,
+                      maxWidth: 180
+                    }}
+                    title={displaySymbol}
+                  >
                     {displaySymbol}
                   </td>
                   <td style={{ textAlign: "left", verticalAlign: "top" }}>{renderMapSimple(b.realized)}</td>
@@ -299,10 +344,16 @@ export default function SymbolTable({ rows }: { rows: Row[] }) {
                     <button
                       className="btn"
                       onClick={async () => {
-                        try { await navigator.clipboard.writeText(textForRow); alert(`${displaySymbol} details copied.`); }
-                        catch { alert("Copy failed."); }
+                        try {
+                          await navigator.clipboard.writeText(textForRow);
+                          alert(`${displaySymbol} details copied.`);
+                        } catch {
+                          alert("Copy failed.");
+                        }
                       }}
-                    >Copy</button>
+                    >
+                      Copy
+                    </button>
                   </td>
                 </tr>
               );

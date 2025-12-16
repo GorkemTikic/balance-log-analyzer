@@ -26,15 +26,13 @@ function useLocalStorage<T>(key: string, initial: T) {
   useEffect(() => {
     try {
       localStorage.setItem(key, JSON.stringify(value));
-    } catch { }
+    } catch {}
   }, [key, value]);
   return [value, setValue] as const;
 }
 
 function splitCols(line: string) {
-  return line.includes("\t")
-    ? line.split(/\t+/)
-    : line.trim().split(/\s{2,}|\s\|\s|\s+/);
+  return line.includes("\t") ? line.split(/\t+/) : line.trim().split(/\s{2,}|\s\|\s|\s+/);
 }
 const DATE_RE = /(\d{4}-\d{2}-\d{2} \d{1,2}:\d{2}:\d{2})/;
 function normalizeTime(s: string) {
@@ -45,9 +43,7 @@ function normalizeTime(s: string) {
   return `${d} ${hh}:${h.split(":")[1]}:${h.split(":")[2]}`;
 }
 function parseUTC(s: string) {
-  const m = s.match(
-    /^(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})$/
-  );
+  const m = s.match(/^(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})$/);
   if (!m) return NaN;
   const [, Y, Mo, D, H, Mi, S] = m;
   return Date.UTC(+Y, +Mo - 1, +D, +H, +Mi, +S);
@@ -65,7 +61,7 @@ function parseBalanceLog(text: string) {
     if (cols.length < 6) continue;
     const [id, uid, asset, type, amountRaw] = cols;
     const timeCol = cols.find((c) => DATE_RE.test(c)) || "";
-    const time = normalizeTime((timeCol.match(DATE_RE)?.[1]) || "");
+    const time = normalizeTime(timeCol.match(DATE_RE)?.[1] || "");
     const ts = parseUTC(time);
     const symbol = cols[6] || "";
     const amount = Number(amountRaw);
@@ -80,7 +76,7 @@ function parseBalanceLog(text: string) {
       ts,
       symbol,
       extra: cols.slice(7).join(" "),
-      raw: line,
+      raw: line
     });
   }
   return rows;
@@ -109,9 +105,7 @@ function groupByTypeAndAsset(rows: Row[]): TotalsByType {
 }
 
 function humanize(t: string) {
-  return t.replace(/_/g, " ").replace(/\b([a-z])/g, (s) =>
-    s.toUpperCase()
-  );
+  return t.replace(/_/g, " ").replace(/\b([a-z])/g, (s) => s.toUpperCase());
 }
 
 /* --- Improved number formatter to expand scientific notation --- */
@@ -156,22 +150,15 @@ export default function App() {
       transfers: true,
       coinSwaps: true,
       autoExchange: true,
-      events: true,
-    },
+      events: true
+    }
   });
 
-  const [selectedTypes, setSelectedTypes] =
-    useLocalStorage<readonly string[]>("bl.types.selected", []);
-  const selectedTypeSet = useMemo(
-    () => new Set(selectedTypes),
-    [selectedTypes]
-  );
+  const [selectedTypes, setSelectedTypes] = useLocalStorage<readonly string[]>("bl.types.selected", []);
+  const selectedTypeSet = useMemo(() => new Set(selectedTypes), [selectedTypes]);
 
   const [tab, setTab] = useState<TabKey>("summary");
-  const [drawerOpen, setDrawerOpen] = useLocalStorage<boolean>(
-    "bl.story.open",
-    false
-  );
+  const [drawerOpen, setDrawerOpen] = useLocalStorage<boolean>("bl.story.open", false);
 
   function runParse(tsv: string) {
     try {
@@ -190,8 +177,7 @@ export default function App() {
     const sym = filters.symbol.trim().toUpperCase();
     return rawRows.filter((r) => {
       if (!(r.ts >= t0 && r.ts <= t1)) return false;
-      if (sym && !(r.symbol || "").toUpperCase().includes(sym))
-        return false;
+      if (sym && !(r.symbol || "").toUpperCase().includes(sym)) return false;
       return true;
     });
   }, [rawRows, filters]);
@@ -204,26 +190,15 @@ export default function App() {
 
   const rows = useMemo(() => {
     if (selectedTypeSet.size === 0) return rowsByDateSymbol; // all on
-    return rowsByDateSymbol.filter((r) =>
-      selectedTypeSet.has(r.type || "(unknown)")
-    );
+    return rowsByDateSymbol.filter((r) => selectedTypeSet.has(r.type || "(unknown)"));
   }, [rowsByDateSymbol, selectedTypeSet]);
 
   const totalsByType = useMemo(() => groupByTypeAndAsset(rows), [rows]);
 
   // Swaps/events (mevcut ekranlar için)
-  const coinSwapLines = useMemo(
-    () => groupSwaps(rows, "COIN_SWAP"),
-    [rows]
-  );
-  const autoExLines = useMemo(
-    () => groupSwaps(rows, "AUTO_EXCHANGE"),
-    [rows]
-  );
-  const eventsOrdersByAsset = useMemo(
-    () => sumByAsset(rows.filter((r) => r.type === "EVENT_CONTRACTS_ORDER")),
-    [rows]
-  );
+  const coinSwapLines = useMemo(() => groupSwaps(rows, "COIN_SWAP"), [rows]);
+  const autoExLines = useMemo(() => groupSwaps(rows, "AUTO_EXCHANGE"), [rows]);
+  const eventsOrdersByAsset = useMemo(() => sumByAsset(rows.filter((r) => r.type === "EVENT_CONTRACTS_ORDER")), [rows]);
   const eventsPayoutsByAsset = useMemo(
     () => sumByAsset(rows.filter((r) => r.type === "EVENT_CONTRACTS_PAYOUT")),
     [rows]
@@ -232,26 +207,18 @@ export default function App() {
   // KPI’lar
   const kpiTotal = rawRows.length;
   const kpiFiltered = rows.length;
-  const kpiSymbols = new Set(
-    rows.map((r) => r.symbol).filter(Boolean)
-  ).size;
+  const kpiSymbols = new Set(rows.map((r) => r.symbol).filter(Boolean)).size;
 
   // Sıralama: büyüklüğe göre
   const typeOrder = useMemo(() => {
     const entries = Object.entries(totalsByType);
-    const magnitude = (m: TotalsMap) =>
-      Object.values(m).reduce(
-        (a, v) => a + Math.abs(v.net) + v.pos + v.neg,
-        0
-      );
+    const magnitude = (m: TotalsMap) => Object.values(m).reduce((a, v) => a + Math.abs(v.net) + v.pos + v.neg, 0);
     return entries.sort((a, b) => magnitude(b[1]) - magnitude(a[1]));
   }, [totalsByType]);
 
   function groupSwaps(lines: Row[], kind: "COIN_SWAP" | "AUTO_EXCHANGE") {
     const matcher =
-      kind === "COIN_SWAP"
-        ? (t: string) => t.includes("COIN_SWAP")
-        : (t: string) => t === "AUTO_EXCHANGE";
+      kind === "COIN_SWAP" ? (t: string) => t.includes("COIN_SWAP") : (t: string) => t === "AUTO_EXCHANGE";
     const filtered = lines.filter((r) => matcher(r.type));
     const map = new Map<string, Row[]>();
     for (const r of filtered) {
@@ -263,8 +230,7 @@ export default function App() {
       const t = group[0].time,
         ts = group[0].ts;
       const byAsset = new Map<string, number>();
-      for (const g of group)
-        byAsset.set(g.asset, (byAsset.get(g.asset) || 0) + g.amount);
+      for (const g of group) byAsset.set(g.asset, (byAsset.get(g.asset) || 0) + g.amount);
       const outs: string[] = [],
         ins: string[] = [];
       for (const [asset, amt] of byAsset.entries()) {
@@ -288,15 +254,10 @@ export default function App() {
       <header className="header">
         <div>
           <h1 className="title">FD Balance Log Analyzer</h1>
-          <div className="subtitle">
-            One Page Summary
-          </div>
+          <div className="subtitle">One Page Summary</div>
         </div>
         <div className="toolbar">
-          <button
-            className="btn btn-dark"
-            onClick={() => setDrawerOpen(true)}
-          >
+          <button className="btn btn-dark" onClick={() => setDrawerOpen(true)}>
             Open Balance Story
           </button>
         </div>
@@ -310,20 +271,19 @@ export default function App() {
         onChange={(next) => setSelectedTypes(Array.from(next))}
         onSelectAll={selectAllTypes}
         onClear={() => setSelectedTypes(detectedTypes)}
-        counts={rowsByDateSymbol.reduce(
-          (acc: Record<string, number>, r) => {
-            const k = r.type || "(unknown)";
-            acc[k] = (acc[k] || 0) + 1;
-            return acc;
-          },
-          {}
-        )}
+        counts={rowsByDateSymbol.reduce((acc: Record<string, number>, r) => {
+          const k = r.type || "(unknown)";
+          acc[k] = (acc[k] || 0) + 1;
+          return acc;
+        }, {})}
       />
 
       <section className="space">
         <GridPasteBox onUseTSV={runParse} onError={setError} />
         {error && (
-          <div className="error" style={{ marginTop: 8 }}>{error}</div>
+          <div className="error" style={{ marginTop: 8 }}>
+            {error}
+          </div>
         )}
       </section>
 
@@ -350,7 +310,7 @@ export default function App() {
               symbol: r.symbol,
               asset: r.asset,
               type: r.type,
-              amount: r.amount,
+              amount: r.amount
             }))}
           />
         </section>
@@ -372,10 +332,7 @@ export default function App() {
           <h3 className="section-title" style={{ marginBottom: 8 }}>
             Diagnostics
           </h3>
-          <ul
-            className="mono small"
-            style={{ lineHeight: "20px", marginTop: 8 }}
-          >
+          <ul className="mono small" style={{ lineHeight: "20px", marginTop: 8 }}>
             <li>Rows parsed: {rawRows.length}</li>
             <li>Rows after filters: {rows.length}</li>
             <li>Unique symbols (filtered): {kpiSymbols}</li>
@@ -384,13 +341,7 @@ export default function App() {
         </section>
       )}
 
-      <StoryDrawer
-        open={drawerOpen}
-        onClose={() => setDrawerOpen(false)}
-        rows={rows}
-        t0={filters.t0}
-        t1={filters.t1}
-      />
+      <StoryDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} rows={rows} t0={filters.t0} t1={filters.t1} />
     </div>
   );
 }

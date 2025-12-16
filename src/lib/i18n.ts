@@ -1,4 +1,3 @@
-
 export type LocalLang = "en" | "tr" | "es" | "pt" | "vi" | "ru" | "uk" | "ar" | "zh" | "ko";
 
 export const LANG_CONFIG: Record<LocalLang, { offset: number; label: string }> = {
@@ -11,7 +10,7 @@ export const LANG_CONFIG: Record<LocalLang, { offset: number; label: string }> =
   uk: { offset: 0, label: "UTC+0" }, // Requested UTC+0
   ar: { offset: 0, label: "UTC+0" }, // Requested UTC+0
   zh: { offset: 8, label: "UTC+8" },
-  ko: { offset: 9, label: "UTC+9" },
+  ko: { offset: 9, label: "UTC+9" }
 };
 
 /* -------- Friendly labels by language -------- */
@@ -68,7 +67,8 @@ const TEXTS_EN = {
   changedFromTo: "After this transfer your balance changed from {BEFORE} {ASSET} to {AFTER} {ASSET}.",
   balanceChanged: "After this transfer your balance changed.",
   afterStart: "After the start, here is what changed:",
-  finalIntro: "Based on all the changes in your transaction history, the leftover balance in your Futures USDⓈ-M wallet will be:",
+  finalIntro:
+    "Based on all the changes in your transaction history, the leftover balance in your Futures USDⓈ-M wallet will be:",
   initialBalancesIntro: "Initial balances before the transfer:",
 
   anchorOnly: "At this date and time your Futures USDs-M Wallet balance was:",
@@ -362,7 +362,7 @@ const TEXTS_VI = {
   FUTURES_PRESENT: "Quà tặng Futures",
   EVENT_CONTRACTS_ORDER: "Hợp đồng sự kiện - Lệnh",
   EVENT_CONTRACTS_PAYOUT: "Hợp đồng sự kiện - Trả thưởng",
-  BFUSD_REWARD: "Phần thưởng BFUSD",
+  BFUSD_REWARD: "Phần thưởng BFUSD"
 };
 
 const TEXTS_AR = {
@@ -431,7 +431,7 @@ const TEXTS_AR = {
   FUTURES_PRESENT: "هدية العقود الآجلة",
   EVENT_CONTRACTS_ORDER: "عقود الأحداث - طلب",
   EVENT_CONTRACTS_PAYOUT: "عقود الأحداث - دفع",
-  BFUSD_REWARD: "مكافأة BFUSD",
+  BFUSD_REWARD: "مكافأة BFUSD"
 };
 
 const TEXTS_ZH = {
@@ -500,7 +500,7 @@ const TEXTS_ZH = {
   FUTURES_PRESENT: "合约赠金",
   EVENT_CONTRACTS_ORDER: "事件合约 - 订单",
   EVENT_CONTRACTS_PAYOUT: "事件合约 - 赔付",
-  BFUSD_REWARD: "BFUSD 奖励",
+  BFUSD_REWARD: "BFUSD 奖励"
 };
 
 const TEXTS_KO = {
@@ -569,7 +569,7 @@ const TEXTS_KO = {
   FUTURES_PRESENT: "선물 증정금",
   EVENT_CONTRACTS_ORDER: "이벤트 계약 - 주문",
   EVENT_CONTRACTS_PAYOUT: "이벤트 계약 - 지급",
-  BFUSD_REWARD: "BFUSD 보상",
+  BFUSD_REWARD: "BFUSD 보상"
 };
 
 // --- SPANISH (Full translation) ---
@@ -639,7 +639,7 @@ const TEXTS_ES = {
   FUTURES_PRESENT: "Regalo de futuros",
   EVENT_CONTRACTS_ORDER: "Contrato de evento - Orden",
   EVENT_CONTRACTS_PAYOUT: "Contrato de evento - Pago",
-  BFUSD_REWARD: "Recompensa BFUSD",
+  BFUSD_REWARD: "Recompensa BFUSD"
 };
 
 // --- PORTUGUESE (Full translation) ---
@@ -709,7 +709,7 @@ const TEXTS_PT = {
   FUTURES_PRESENT: "Presente de futuros",
   EVENT_CONTRACTS_ORDER: "Contrato de evento - Ordem",
   EVENT_CONTRACTS_PAYOUT: "Contrato de evento - Pagamento",
-  BFUSD_REWARD: "Recompensa BFUSD",
+  BFUSD_REWARD: "Recompensa BFUSD"
 };
 
 // --- UKRAINIAN (Full translation) ---
@@ -779,7 +779,7 @@ const TEXTS_UK = {
   FUTURES_PRESENT: "Подарунок Futures",
   EVENT_CONTRACTS_ORDER: "Контракт події - Ордер",
   EVENT_CONTRACTS_PAYOUT: "Контракт події - Виплата",
-  BFUSD_REWARD: "Винагорода BFUSD",
+  BFUSD_REWARD: "Винагорода BFUSD"
 };
 
 export const TEXTS: Record<LocalLang, typeof TEXTS_EN> = {
@@ -792,5 +792,5 @@ export const TEXTS: Record<LocalLang, typeof TEXTS_EN> = {
   pt: TEXTS_PT,
   ru: TEXTS_RU,
   uk: TEXTS_UK,
-  ar: TEXTS_AR,
+  ar: TEXTS_AR
 };
