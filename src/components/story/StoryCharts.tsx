@@ -1,7 +1,8 @@
 import React, { useMemo } from "react";
 import { type StoryTabProps } from "./types";
 import { TEXTS } from "@/lib/i18n";
-import { ChartLine, ChartBars, buildDailyNet, buildAssetNet } from "@/components/charts/SimpleCharts";
+import { buildDailyNet, buildAssetNet } from "@/components/charts/SimpleCharts";
+import { DailyPerformanceChart, AssetDistributionChart } from "@/components/charts/PremiumCharts";
 
 export default function StoryCharts({ rows, lang }: StoryTabProps) {
   const T = TEXTS[lang];
@@ -17,13 +18,13 @@ export default function StoryCharts({ rows, lang }: StoryTabProps) {
         <div className="section-head">
           <h4 className="section-title">{T.dailyNetAll}</h4>
         </div>
-        <ChartLine data={dailySeries} height={240} />
+        <DailyPerformanceChart data={dailySeries} height={300} />
       </div>
       <div className="card" style={{ marginTop: 16 }}>
         <div className="section-head">
           <h4 className="section-title">{T.netByAsset}</h4>
         </div>
-        <ChartBars data={assetNets} height={280} />
+        <AssetDistributionChart data={assetNets} height={320} />
       </div>
     </div>
   );
