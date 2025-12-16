@@ -68,21 +68,19 @@ export default function StoryDrawer({
           borderLeft: "1px solid rgba(255,255,255,0.1)"
         }}
       >
-        {/* Header */}
-        <div className="section-head sticky-top" style={{ flexWrap: "wrap", gap: 8, paddingBottom: 16 }}>
-          <h3 className="section-title" style={{ fontSize: 20, color: "#f8fafc" }}>
-            {T.title}
-          </h3>
-          <div className="btn-row" style={{ gap: 8, flexWrap: "wrap" }}>
+        {/* Premium Header */}
+        <div className="drawer-header">
+          <h3 className="drawer-title">{T.title}</h3>
+
+          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+            {/* Language Selector */}
             <select
-              className="btn"
-              style={{ background: "#111827", color: "#fff", borderColor: "rgba(255,255,255,0.2)" }}
+              className="select-premium"
               value={lang}
               onChange={(e) => setLang(e.target.value as LocalLang)}
               title={T.lang}
             >
               <option value="en">English (UTC+0)</option>
-              {/* <option value="tr">Türkçe (UTC+3)</option> ... can add back if needed, keep simplified for now or copy full list */}
               <option value="tr">Türkçe (UTC+3)</option>
               <option value="es">Español (UTC+0)</option>
               <option value="pt">Português (UTC+0)</option>
@@ -93,15 +91,19 @@ export default function StoryDrawer({
               <option value="zh">中文 (UTC+8)</option>
               <option value="ko">한국어 (UTC+9)</option>
             </select>
-            <button className="btn" onClick={onClose}>
-              {T.close}
+
+            {/* Close Button (X icon) */}
+            <button className="btn-icon-close" onClick={onClose} title={T.close}>
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
             </button>
           </div>
         </div>
 
-        {/* Tabs */}
-        <div className="card" style={{ marginTop: 8, padding: 8, background: "rgba(0,0,0,0.2)", border: "none" }}>
-          <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+        {/* Tabs - Segmented Control Style */}
+        <div style={{ padding: "16px 24px 0" }}>
+          <div className="tabs-segmented">
             <TabBtn id="narrative" label={T.tabNarrative} current={tab} set={setTab} />
             <TabBtn id="audit" label={T.tabAudit} current={tab} set={setTab} />
             <TabBtn id="charts" label={T.tabCharts} current={tab} set={setTab} />
@@ -109,11 +111,13 @@ export default function StoryDrawer({
           </div>
         </div>
 
-        {/* Content */}
-        {tab === "narrative" && <StoryNarrative {...props} />}
-        {tab === "audit" && <StoryAudit {...props} />}
-        {tab === "charts" && <StoryCharts {...props} />}
-        {tab === "raw" && <StoryRaw {...props} />}
+        {/* Content Container (Scrollable part) */}
+        <div style={{ padding: "24px" }}>
+          {tab === "narrative" && <StoryNarrative {...props} />}
+          {tab === "audit" && <StoryAudit {...props} />}
+          {tab === "charts" && <StoryCharts {...props} />}
+          {tab === "raw" && <StoryRaw {...props} />}
+        </div>
       </div>
     </div>
   );
@@ -121,12 +125,10 @@ export default function StoryDrawer({
 
 function TabBtn({ id, label, current, set }: { id: any; label: string; current: string; set: (v: any) => void }) {
   const active = current === id;
+  // Use 'accent-blue' class for the active tab to trigger the blue styling
+  const className = `tab-segment ${active ? "active accent-blue" : ""}`;
   return (
-    <button
-      className="btn"
-      onClick={() => set(id)}
-      style={{ background: active ? "#38bdf8" : "transparent", color: active ? "#0f172a" : "#94a3b8", border: "none" }}
-    >
+    <button className={className} onClick={() => set(id)}>
       {label}
     </button>
   );
