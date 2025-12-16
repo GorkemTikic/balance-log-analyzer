@@ -58,6 +58,11 @@ export function fmtSigned(x: number) {
   return `${sign}${fmtTrim(Math.abs(n))}`;
 }
 
+/** Formats absolute value of a number (helper for RpnCard) */
+export function fmtAbs(x: number) {
+  return fmtTrim(Math.abs(x));
+}
+
 /** Returns true if value is significantly non-zero */
 export function nonZero(v: number) {
   return Math.abs(v) > EPS;

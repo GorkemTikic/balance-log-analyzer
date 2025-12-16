@@ -21,14 +21,18 @@ export default function GridPasteBox({
       const score = t.querySelectorAll("tr").length * t.querySelectorAll("td,th").length;
       if (score > bestScore) {
         bestScore = score;
-        best = t as HTMLTableElement;
+        best = t;
       }
     });
+
     if (!best) return [];
+
+    // Explicit type for clarity and safety
+    const tableEl = best as HTMLTableElement;
     const rows: string[][] = [];
-    best.querySelectorAll("tr").forEach((tr) => {
+    tableEl.querySelectorAll("tr").forEach((tr: HTMLTableRowElement) => { // Fix implicit any
       const cells = Array.from(tr.querySelectorAll<HTMLElement>("th,td"));
-      const row = cells.map((c) => (c.textContent ?? "").trim());
+      const row = cells.map((c: HTMLElement) => (c.textContent ?? "").trim()); // Explicit type for c
       if (row.length) rows.push(row);
     });
     return rows;
