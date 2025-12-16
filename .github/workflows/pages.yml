@@ -1,0 +1,51 @@
+name: Build & Deploy
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js (npm registry = npmjs)
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: https://registry.npmjs.org
+          # cache: 'npm'  # LOCK YOK -> KULLANMIYORUZ
+
+      - name: Ensure npm registry (.npmrc)
+        run: |
+          echo "registry=https://registry.npmjs.org/" > .npmrc
+          echo "@types:registry=https://registry.npmjs.org/" >> .npmrc
+          echo "always-auth=false" >> .npmrc
+
+      - name: Install deps (no lock)
+        run: npm install --no-audit --no-fund
+
+      - name: Build
+        run: npm run build
+
+      - name: Upload artifact (dist)
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
