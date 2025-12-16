@@ -201,8 +201,8 @@ export default function SymbolTable({ rows }: { rows: Row[] }) {
         {keys.map((k) => {
           const v = m[k];
           const parts: React.ReactNode[] = [];
-          if (v.pos !== 0) parts.push(<span key="p" style={{ color: "#0b7a0b" }}>+{fmt(v.pos)} </span>);
-          if (v.neg !== 0) parts.push(<span key="n" style={{ color: "#a01212" }}>−{fmt(v.neg)} </span>);
+          if (v.pos !== 0) parts.push(<span key="p" style={{ color: "#10b981" }}>+{fmt(v.pos)} </span>);
+          if (v.neg !== 0) parts.push(<span key="n" style={{ color: "#ef4444" }}>−{fmt(v.neg)} </span>);
           return (
             <div key={k} className="nowrap">
               {k} {parts}
@@ -230,7 +230,7 @@ export default function SymbolTable({ rows }: { rows: Row[] }) {
             (b.funding[a]?.net || 0) +
             (b.commission[a]?.net || 0) +
             (b.insurance[a]?.net || 0);
-          const col = net === 0 ? "#374151" : net > 0 ? "#0b7a0b" : "#a01212";
+          const col = net === 0 ? "#94a3b8" : net > 0 ? "#10b981" : "#ef4444";
           return (
             <div key={a} className="nowrap" style={{ color: col }}>
               {a} <strong>= {fmt(net)}</strong>
