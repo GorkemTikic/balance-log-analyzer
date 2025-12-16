@@ -469,3 +469,37 @@ input.btn::placeholder {
   z-index: 10;
   background: var(--bg);
 }
+
+.input-block {
+  width: 100%;
+  box-sizing: border-box;
+  text-align: left;
+  margin-top: 6px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  /* Inherit btn-like styles */
+  display: inline-flex;
+  align-items: center;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: rgba(15, 23, 42, 0.6);
+  color: var(--text);
+  font-size: 14px;
+  min-height: 42px;
+  cursor: text;
+  font-family: inherit;
+}
+
+.input-block:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2);
+}
+
+textarea.input-block {
+  white-space: pre-wrap;
+  overflow: auto;
+}

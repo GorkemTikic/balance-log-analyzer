@@ -105,6 +105,41 @@ export function parseFinalBalancesFromAudit(audit: string): { asset: string; amo
   return out;
 }
 
+/* -------- Parsers (moved from StoryDrawer) -------- */
+export function parseUTC(s: string): number | undefined {
+  const m = s.trim().match(/^(\d{4})-(\d{2})-(\d{2})\s+(\d{2}):(\d{2}):(\d{2})$/);
+  if (!m) return undefined;
+  const [, Y, Mo, D, H, Mi, S] = m;
+  return Date.UTC(+Y, +Mo - 1, +D, +H, +Mi, +S);
+}
+
+export function parseBaseline(s: string): { map?: Record<string, number>; error?: string } {
+  const out: Record<string, number> = {};
+  const lines = s.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+  if (!lines.length) return { map: undefined };
+
+  // Accept "ASSET amount" or "amount ASSET"; amount may be decimal or scientific (e.g., 5.4e-7)
+  const AMT = "(-?\\d+(?:\\.\\d+)?(?:e[+\\-]?\\d+)?)";
+  const PAT1 = new RegExp(`^([A-Z0-9_]+)\\s+${AMT}$`, "i");
+  const PAT2 = new RegExp(`^${AMT}\\s+([A-Z0-9_]+)$`, "i");
+
+  for (const line of lines) {
+    let m = line.match(PAT1);
+    if (m) { out[m[1].toUpperCase()] = (out[m[1].toUpperCase()] || 0) + Number(m[2]); continue; }
+    m = line.match(PAT2);
+    if (m) { out[m[2].toUpperCase()] = (out[m[2].toUpperCase()] || 0) + Number(m[1]); continue; }
+    return { error: `Could not parse: "${line}"` };
+  }
+  return { map: out };
+}
+
+export function parseTransfer(amountStr: string, assetStr: string) {
+  const amount = Number((amountStr || "").trim());
+  const asset = (assetStr || "").trim().toUpperCase();
+  if (!asset || !Number.isFinite(amount)) return undefined;
+  return { asset, amount };
+}
+
 /* -------- Narrative composer (display only; no math changes) -------- */
 export function composeNarrative(opts: {
   lang: LocalLang;
