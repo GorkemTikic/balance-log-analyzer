@@ -13,9 +13,8 @@ const TYPE_COMMISSION = new Set(["COMMISSION", "TRADING_FEE"]);
 const TYPE_FUNDING = new Set(["FUNDING_FEE"]);
 const TYPE_OTHER_FEE = new Set(["INSURANCE_CLEAR", "LIQUIDATION_FEE"]);
 
-function fmtMoney(n: number, asset: string) {
-  return `${n > 0 ? "+" : ""}${n.toFixed(2)} ${asset}`;
-}
+import { fmtMoney } from "@/lib/format";
+// function fmtMoney... removed
 
 type AssetStats = {
   asset: string;
@@ -140,14 +139,14 @@ export default function FilterBar({ rows }: { rows: Row[] }) {
                         <div style={{ marginBottom: 12 }}>
                           <div style={{ fontSize: 12, color: "#94a3b8", marginBottom: 2 }}>BEST DAY</div>
                           <div style={{ display: "flex", alignItems: "baseline", gap: 12 }}>
-                            <div style={{ fontSize: 18, fontWeight: 700, color: "#10b981" }}>{fmtMoney(stats.bestDay.val, "")}</div>
+                            <div className="text-green" style={{ fontSize: 18, fontWeight: 700 }}>{fmtMoney(stats.bestDay.val, "")}</div>
                             <div style={{ fontSize: 14, color: "#e2e8f0" }}>{stats.bestDay.day}</div>
                           </div>
                         </div>
                         <div>
                           <div style={{ fontSize: 12, color: "#94a3b8", marginBottom: 2 }}>WORST DAY</div>
                           <div style={{ display: "flex", alignItems: "baseline", gap: 12 }}>
-                            <div style={{ fontSize: 18, fontWeight: 700, color: "#ef4444" }}>{fmtMoney(stats.worstDay.val, "")}</div>
+                            <div className="text-red" style={{ fontSize: 18, fontWeight: 700 }}>{fmtMoney(stats.worstDay.val, "")}</div>
                             <div style={{ fontSize: 14, color: "#e2e8f0" }}>{stats.worstDay.day}</div>
                           </div>
                         </div>
@@ -167,11 +166,13 @@ export default function FilterBar({ rows }: { rows: Row[] }) {
 }
 
 function RowLine({ label, val, asset, bold, colored }: { label: string; val: number; asset: string; bold?: boolean; colored?: boolean }) {
-  const col = colored ? (val >= 0 ? "#10b981" : "#ef4444") : (val > 0 ? "#10b981" : (val < 0 ? "#ef4444" : "#f8fafc"));
+  const cls = colored
+    ? (val >= 0 ? "text-green" : "text-red")
+    : (val > 0 ? "text-green" : (val < 0 ? "text-red" : "text-bright"));
   return (
     <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
       <span style={{ color: "#e2e8f0" }}>{label}</span>
-      <span style={{ fontWeight: bold ? 700 : 400, color: col }}>
+      <span className={cls} style={{ fontWeight: bold ? 700 : 400 }}>
         {fmtMoney(val, asset)}
       </span>
     </div>

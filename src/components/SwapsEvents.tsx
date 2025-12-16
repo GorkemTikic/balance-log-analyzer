@@ -5,14 +5,8 @@ type Line = { time: string; ts: number; text: string };
 type TotalsMap = Record<string, { pos: number; neg: number; net: number }>;
 
 /* --- Number formatting (same as StoryDrawer) --- */
-function fmtTrim(value: number) {
-  let s = String(value);
-  if (/e/i.test(s)) s = value.toFixed(20); // expand scientific notation
-  if (s.includes(".")) {
-    s = s.replace(/(\.\d*?[1-9])0+$/, "$1").replace(/\.0+$/, "");
-  }
-  return s === "-0" ? "0" : s;
-}
+import { fmtTrim } from "@/lib/format";
+// function fmtTrim(value: number) ... removed
 
 /* -------- helpers: parse, copy, export (no extra deps) -------- */
 
@@ -199,9 +193,9 @@ export default function SwapsEvents({
               <tbody>
                 {coinRows.map(([date, out, inn], i) => (
                   <tr key={i}>
-                    <td style={{ color: "#6b7280", textAlign: "left" }}>{date}</td>
-                    <td style={{ color: "#dc2626", textAlign: "right" }}>{out}</td>
-                    <td style={{ color: "#16a34a", textAlign: "right" }}>{inn}</td>
+                    <td className="text-muted text-left">{date}</td>
+                    <td className="text-red text-right">{out}</td>
+                    <td className="text-green text-right">{inn}</td>
                   </tr>
                 ))}
               </tbody>
@@ -242,9 +236,9 @@ export default function SwapsEvents({
               <tbody>
                 {autoRows.map(([date, out, inn], i) => (
                   <tr key={i}>
-                    <td style={{ color: "#6b7280", textAlign: "left" }}>{date}</td>
-                    <td style={{ color: "#dc2626", textAlign: "right" }}>{out}</td>
-                    <td style={{ color: "#16a34a", textAlign: "right" }}>{inn}</td>
+                    <td className="text-muted text-left">{date}</td>
+                    <td className="text-red text-right">{out}</td>
+                    <td className="text-green text-right">{inn}</td>
                   </tr>
                 ))}
               </tbody>
@@ -278,13 +272,13 @@ export default function SwapsEvents({
                   const p = eventsPayoutsByAsset[asset] || { pos: 0, neg: 0, net: 0 };
                   return (
                     <tr key={asset}>
-                      <td style={{ textAlign: "left" }}>{asset}</td>
-                      <td style={{ textAlign: "right", color: "#16a34a" }}>{fmtTrim(o.pos)}</td>
-                      <td style={{ textAlign: "right", color: "#dc2626" }}>-{fmtTrim(o.neg)}</td>
-                      <td style={{ textAlign: "right" }}>{fmtTrim(o.net)}</td>
-                      <td style={{ textAlign: "right", color: "#16a34a" }}>{fmtTrim(p.pos)}</td>
-                      <td style={{ textAlign: "right", color: "#dc2626" }}>-{fmtTrim(p.neg)}</td>
-                      <td style={{ textAlign: "right" }}>{fmtTrim(p.net)}</td>
+                      <td className="text-left">{asset}</td>
+                      <td className="text-green text-right">{fmtTrim(o.pos)}</td>
+                      <td className="text-red text-right">-{fmtTrim(o.neg)}</td>
+                      <td className="text-right">{fmtTrim(o.net)}</td>
+                      <td className="text-green text-right">{fmtTrim(p.pos)}</td>
+                      <td className="text-red text-right">-{fmtTrim(p.neg)}</td>
+                      <td className="text-right">{fmtTrim(p.net)}</td>
                     </tr>
                   );
                 })}

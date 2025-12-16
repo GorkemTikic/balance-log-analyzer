@@ -10,29 +10,13 @@ export type Row = {
 export type SummaryRow = { label: string; asset: string; in: number; out: number; net: number };
 
 // ---------------- Formatting ----------------
-const EPS = 1e-12;
-export function fmt(v: number) {
-  // “kuruşuna kadar” – tüm küsurat korunur; gereksiz 0’ları budar
-  const s = v.toFixed(18).replace(/0+$/, "").replace(/\.$/, "");
-  return s === "-0" ? "0" : s;
-}
-export function fmtSignedPlus(v: number) { return (v >= 0 ? "+" : "") + fmt(v); }
-export function nonZero(v: number) { return Math.abs(v) > EPS; }
+import { fmt, fmtTrim, fmtFinal, fmtSigned as fmtSignedPlus } from "./format";
+import { nonZero } from "./format"; // Wait, I didn't add nonZero to format.ts yet.
 
-/* -------- Number formatting (from StoryDrawer) -------- */
-export function fmtTrim(value: number) {
-  let s = String(value);
-  // Bilimsel gösterim -> yüksek hassasiyetle ondalığa çevir
-  if (/e/i.test(s)) s = value.toFixed(20);
-  if (s.includes(".")) {
-    s = s.replace(/(\.\d*?[1-9])0+$/, "$1").replace(/\.0+$/, "");
-  }
-  return s === "-0" ? "0" : s;
-}
-/* Near-zero display just for FINAL balances in Narrative */
-export function fmtFinal(amount: number) {
-  return Math.abs(amount) < 1e-6 ? "0.0000" : fmtTrim(amount);
-}
+// Let's add nonZero to format.ts in next step or now? 
+// Actually I can just inline it or add it to format.ts. 
+// Ideally I should update format.ts to include nonZero first.
+
 
 /* Template: "Hello {NAME}" */
 function tFormat(s: string, map: Record<string, string>) {

@@ -1,5 +1,6 @@
 import React, { useRef, useState, useEffect } from "react";
-import { type Row, fmtTrim } from "@/lib/story";
+import { type Row } from "@/lib/story";
+import { fmtTrim } from "@/lib/format";
 
 /* ---------------- Tiny charts ---------------- */
 export type LinePoint = { label: string; value: number };

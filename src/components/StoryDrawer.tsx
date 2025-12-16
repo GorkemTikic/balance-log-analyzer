@@ -5,11 +5,10 @@ import {
   buildSummaryRows,
   type SummaryRow,
   type Row,
-  fmtTrim,
-  fmtFinal,
   parseFinalBalancesFromAudit,
   composeNarrative
 } from "@/lib/story";
+import { fmtTrim, fmtFinal } from "@/lib/format";
 import { TEXTS, type LocalLang, friendlyLabel } from "@/lib/i18n";
 import { ChartLine, ChartBars, buildDailyNet, buildAssetNet } from "./charts/SimpleCharts";
 

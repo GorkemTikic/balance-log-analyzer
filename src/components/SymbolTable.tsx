@@ -1,13 +1,13 @@
 // src/components/SymbolTable.tsx
 import React, { useMemo, useRef } from "react";
+import { fmt } from "@/lib/format";
 
 export type Row = { symbol: string; asset: string; type: string; amount: number };
 
 export default function SymbolTable({ rows }: { rows: Row[] }) {
   const tableWrapRef = useRef<HTMLDivElement>(null);
 
-  const fmt = (n: number) =>
-    Number.isFinite(n) ? (Math.round(n * 1e12) / 1e12).toString() : "0";
+  //  const fmt = ... removed
 
   function sumByAsset(rs: Row[]) {
     const acc: Record<string, { pos: number; neg: number; net: number }> = {};
@@ -201,8 +201,8 @@ export default function SymbolTable({ rows }: { rows: Row[] }) {
         {keys.map((k) => {
           const v = m[k];
           const parts: React.ReactNode[] = [];
-          if (v.pos !== 0) parts.push(<span key="p" style={{ color: "#10b981" }}>+{fmt(v.pos)} </span>);
-          if (v.neg !== 0) parts.push(<span key="n" style={{ color: "#ef4444" }}>−{fmt(v.neg)} </span>);
+          if (v.pos !== 0) parts.push(<span key="p" className="text-green">+{fmt(v.pos)} </span>);
+          if (v.neg !== 0) parts.push(<span key="n" className="text-red">−{fmt(v.neg)} </span>);
           return (
             <div key={k} className="nowrap">
               {k} {parts}
@@ -230,9 +230,9 @@ export default function SymbolTable({ rows }: { rows: Row[] }) {
             (b.funding[a]?.net || 0) +
             (b.commission[a]?.net || 0) +
             (b.insurance[a]?.net || 0);
-          const col = net === 0 ? "#94a3b8" : net > 0 ? "#10b981" : "#ef4444";
+          const cls = net === 0 ? "text-muted" : net > 0 ? "text-green" : "text-red";
           return (
-            <div key={a} className="nowrap" style={{ color: col }}>
+            <div key={a} className={`nowrap ${cls}`}>
               {a} <strong>= {fmt(net)}</strong>
             </div>
           );
