@@ -46,10 +46,13 @@ export function fmt(n: number) {
 /**
  * Formats a monetary amount with currency symbol or code.
  * e.g. "+5.00 USDT", "-2.50 BTC"
+ * Falls back to full precision when toFixed(2) rounds to "0.00" for non-zero values.
  */
 export function fmtMoney(n: number, asset: string) {
   const sign = n > 0 ? "+" : "";
-  return `${sign}${n.toFixed(2)} ${asset}`;
+  const fixed2 = n.toFixed(2);
+  const display = Math.abs(n) > EPS && Math.abs(parseFloat(fixed2)) < EPS ? fmtTrim(n) : fixed2;
+  return `${sign}${display} ${asset}`;
 }
 
 export function fmtSigned(x: number) {
@@ -74,4 +77,36 @@ export function nonZero(v: number) {
  */
 export function fmtFinal(amount: number) {
   return Math.abs(amount) < 1e-6 ? "0.0000" : fmtTrim(amount);
+}
+
+/**
+ * USD-pegged stables Binance settles to 8 decimal places. Anything beyond
+ * that in our output is just IEEE-754 drift, so the narrative final
+ * balance for these assets is rounded to 8 dp before trimming. Volatile
+ * coins (BTC, ETH, BNB, …) keep full precision because dust amounts at
+ * 1e-7 / 1e-8 can be economically meaningful.
+ */
+const STABLE_ASSETS_8DP = new Set([
+  "USDT",
+  "USDC",
+  "BUSD",
+  "BFUSD",
+  "FDUSD",
+  "TUSD",
+  "USDP",
+  "DAI",
+  "USDE",
+  "USD1",
+  "BNFCR",
+  "LDUSDT"
+]);
+
+export function fmtFinalForAsset(amount: number, asset: string) {
+  if (Math.abs(amount) < 1e-6) return "0.0000";
+  if (STABLE_ASSETS_8DP.has(asset.toUpperCase())) {
+    // Round to 8 dp, then strip trailing zeros via fmtTrim.
+    const rounded = Math.round(amount * 1e8) / 1e8;
+    return fmtTrim(rounded);
+  }
+  return fmtTrim(amount);
 }

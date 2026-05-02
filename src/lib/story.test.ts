@@ -77,10 +77,9 @@ describe('story.ts', () => {
 
             expect(result).toContain('Applied anchor transfer: +100 USDT');
             expect(result).toContain('USDT  +50'); // Net effect
-            // Final balance logic in buildAudit only runs if baseline is PROVIDED (non-undefined).
-            // Let's check source code: "if (baseline && Object.keys(baseline).length) { ... final math ... }"
-            // So if baseline is missing, "Final expected balances" section is NOT shown.
-            expect(result).not.toContain('Final expected balances:');
+            // Final balances are now always shown (rolling from zero when no baseline).
+            expect(result).toContain('Final expected balances');
+            expect(result).toContain('USDT  150');
         });
 
         it('shows final balances if baseline is provided (must be non-empty)', () => {

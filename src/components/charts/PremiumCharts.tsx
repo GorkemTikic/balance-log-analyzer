@@ -37,9 +37,17 @@ const CustomTooltip = ({ active, payload, label, mode }: any) => {
 /*                           Daily Performance                                */
 /* -------------------------------------------------------------------------- */
 
-export function DailyPerformanceChart({ data, height = 260 }: { data: { label: string; value: number }[]; height?: number }) {
+export function DailyPerformanceChart({
+    data,
+    height = 260,
+    emptyText = "No data available"
+}: {
+    data: { label: string; value: number }[];
+    height?: number;
+    emptyText?: string;
+}) {
     if (!data || !data.length) {
-        return <div className="muted text-center" style={{ padding: 20 }}>No data available</div>;
+        return <div className="muted text-center" style={{ padding: 20 }}>{emptyText}</div>;
     }
 
     // Determine gradient color based on final value (positive=green, negative=red)
@@ -94,9 +102,17 @@ export function DailyPerformanceChart({ data, height = 260 }: { data: { label: s
 /*                            Asset Distribution                              */
 /* -------------------------------------------------------------------------- */
 
-export function AssetDistributionChart({ data, height = 300 }: { data: { asset: string; net: number }[]; height?: number }) {
+export function AssetDistributionChart({
+    data,
+    height = 300,
+    emptyText = "No data available"
+}: {
+    data: { asset: string; net: number }[];
+    height?: number;
+    emptyText?: string;
+}) {
     if (!data || !data.length) {
-        return <div className="muted text-center" style={{ padding: 20 }}>No data available</div>;
+        return <div className="muted text-center" style={{ padding: 20 }}>{emptyText}</div>;
     }
 
     return (

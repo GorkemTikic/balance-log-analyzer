@@ -18,13 +18,19 @@ export default function StoryCharts({ rows, lang }: StoryTabProps) {
         <div className="section-head">
           <h4 className="section-title">{T.dailyNetAll}</h4>
         </div>
-        <DailyPerformanceChart data={dailySeries} height={300} />
+        <p className="text-muted small" style={{ margin: "0 16px 10px" }}>
+          {T.dailyNetHint}
+        </p>
+        <DailyPerformanceChart data={dailySeries} height={300} emptyText={T.noData} />
       </div>
       <div className="card" style={{ marginTop: 16 }}>
         <div className="section-head">
           <h4 className="section-title">{T.netByAsset}</h4>
         </div>
-        <AssetDistributionChart data={assetNets} height={320} />
+        <p className="text-muted small" style={{ margin: "0 16px 10px" }}>
+          {T.assetNetHint}
+        </p>
+        <AssetDistributionChart data={assetNets} height={320} emptyText={T.noData} />
       </div>
     </div>
   );

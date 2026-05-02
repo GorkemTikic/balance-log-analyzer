@@ -7,6 +7,7 @@ export type Row = {
   uid: string;
   asset: string;
   type: string;
+  amountStr?: string;
   amount: number;
   time: string;
   ts: number;
@@ -18,7 +19,7 @@ export type Row = {
 export type SummaryRow = { label: string; asset: string; in: number; out: number; net: number };
 
 // ---------------- Formatting ----------------
-import { fmt, fmtTrim, fmtFinal, fmtSigned as fmtSignedPlus } from "./format";
+import { fmt, fmtTrim, fmtFinalForAsset, fmtSigned as fmtSignedPlus } from "./format";
 import { nonZero } from "./format"; // Wait, I didn't add nonZero to format.ts yet.
 
 // Let's add nonZero to format.ts in next step or now?
@@ -106,7 +107,7 @@ export function parseFinalBalancesFromAudit(audit: string): { asset: string; amo
   if (startIdx === -1) return [];
   const out: { asset: string; amount: number }[] = [];
   for (let i = startIdx + 1; i < lines.length; i++) {
-    const m = lines[i].match(/•\s*([A-Z0-9_]+)\s+(-?\d+(?:\.\d+)?(?:e[+\-]?\d+)?)/i);
+    const m = lines[i].match(/•\s*([A-Z0-9_]+)\s+(-?\d+(?:\.\d+)?(?:e[+-]?\d+)?)/i);
     if (!m) continue;
     out.push({ asset: m[1].toUpperCase(), amount: Number(m[2]) });
   }
@@ -176,12 +177,17 @@ export function composeNarrative(opts: {
   lines.push(tFormat(T.timesNote, { ZONE: conf.label }));
   lines.push("");
 
-  // Initial balances line (varsa tüm varlıkları listele)
+  // Initial balances line. Pick wording based on whether the user actually
+  // told us about a transfer-at-start; otherwise the "before the transfer"
+  // phrasing is misleading.
   if (baselineMap && Object.keys(baselineMap).length) {
     const items = Object.keys(baselineMap)
       .sort()
       .map((a) => `${a} ${fmtTrim(baselineMap[a])}`);
-    lines.push(`${T.initialBalancesIntro} ${items.join("  •  ")}`);
+    const intro = transferAtStart
+      ? T.initialBalancesIntro
+      : (T as { initialBalancesNoTransfer?: string }).initialBalancesNoTransfer || T.initialBalancesIntro;
+    lines.push(`${intro} ${items.join("  •  ")}`);
   }
 
   // Start line
@@ -288,7 +294,7 @@ export function composeNarrative(opts: {
   if (finalFromAudit.length > 0) {
     lines.push(T.finalIntro);
     for (const f of finalFromAudit) {
-      lines.push(`  • ${f.asset} ${fmtFinal(f.amount)}`);
+      lines.push(`  • ${f.asset} ${fmtFinalForAsset(f.amount, f.asset)}`);
     }
   }
 
@@ -381,8 +387,10 @@ export function buildAudit(
     .map((a) => `  • ${a}  ${fmtSignedPlus(assetNet[a])}`);
   lines.push(...(netLines.length ? netLines : ["  • 0"]));
 
-  if (baseline && Object.keys(baseline).length) {
-    const final: Record<string, number> = { ...baseline };
+  // Always compute final expected balances. If no baseline was provided we
+  // roll from zero — useful for users who only want to see net activity.
+  {
+    const final: Record<string, number> = { ...(baseline || {}) };
     if (anchorTransfer) final[anchorTransfer.asset] = (final[anchorTransfer.asset] || 0) + anchorTransfer.amount;
     for (const a of Object.keys(assetNet)) final[a] = (final[a] || 0) + assetNet[a];
 
@@ -396,7 +404,10 @@ export function buildAudit(
       .sort()
       .map((a) => `  • ${a}  ${fmt(final[a])}`);
     if (finalLines.length) {
-      lines.push("", "Final expected balances:", ...finalLines);
+      const heading = baseline && Object.keys(baseline).length
+        ? "Final expected balances:"
+        : "Final expected balances (rolling from zero):";
+      lines.push("", heading, ...finalLines);
     }
   }
 

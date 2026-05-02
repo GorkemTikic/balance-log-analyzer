@@ -438,6 +438,30 @@ input.btn::placeholder {
   color: #f8fafc;
 }
 
+.signed-amount {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.signed-positive {
+  color: #10b981;
+}
+
+.signed-negative {
+  color: #ef4444;
+}
+
+.signed-zero {
+  color: var(--muted);
+}
+
+.rpn-totals-line {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+  align-items: baseline;
+}
+
 /* Utility Layout */
 .flex-between {
   display: flex;
@@ -517,9 +541,6 @@ textarea.input-block {
 
 /* =============== Premium Drawer Header =============== */
 .drawer-header {
-  position: sticky;
-  top: 0;
-  z-index: 20;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -636,4 +657,233 @@ textarea.input-block {
   background: var(--primary);
   color: #0f172a;
   /* Dark text on blue */
+}
+
+/* Exchange / swap ledger */
+.exchange-section-head {
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.metric-label {
+  display: block;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0;
+  margin-bottom: 4px;
+}
+
+.exchange-summary-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 18px;
+  margin: 14px 0 12px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.exchange-summary-strip strong {
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+
+.exchange-route-summary {
+  margin: 0 0 12px;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 10px 0;
+  overflow-x: auto;
+}
+
+.exchange-route-summary-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 6px;
+}
+
+.exchange-route-table,
+.exchange-ledger-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.exchange-route-table th,
+.exchange-route-table td,
+.exchange-ledger-table th,
+.exchange-ledger-table td {
+  border-bottom: 1px solid rgba(148, 163, 184, 0.16);
+  padding: 8px 10px;
+  text-align: left;
+  vertical-align: top;
+}
+
+.exchange-route-table th,
+.exchange-ledger-table th {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0;
+}
+
+.exchange-route-table td,
+.exchange-ledger-table td {
+  color: var(--text);
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.exchange-route-table th:nth-child(1) {
+  width: 24%;
+}
+
+.exchange-route-table th:nth-child(2) {
+  width: 72px;
+}
+
+.exchange-ledger-scroll {
+  max-height: 520px;
+  overflow: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: rgba(15, 23, 42, 0.24);
+}
+
+.exchange-ledger-table th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: #1e293b;
+}
+
+.exchange-ledger-table th:nth-child(1) {
+  width: 154px;
+}
+
+.exchange-ledger-table th:nth-child(2) {
+  width: 120px;
+}
+
+.exchange-ledger-table th:nth-child(3),
+.exchange-ledger-table th:nth-child(4) {
+  width: 18%;
+}
+
+.exchange-ledger-table th:nth-child(5) {
+  width: 18%;
+}
+
+.exchange-ledger-table th:nth-child(6) {
+  width: 126px;
+}
+
+.exchange-ledger-row:hover td {
+  background: rgba(56, 189, 248, 0.05);
+}
+
+.exchange-route {
+  display: inline-block;
+  color: #dbeafe;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+  font-size: 12px;
+}
+
+.exchange-rate {
+  color: #cbd5e1;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+  font-size: 12px;
+}
+
+.exchange-amount-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+  align-items: baseline;
+}
+
+.exchange-row-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.exchange-row-actions .btn {
+  padding: 5px 9px;
+}
+
+.exchange-ledger-detail td {
+  padding: 0 10px 10px;
+  background: rgba(15, 23, 42, 0.38);
+}
+
+.exchange-load-more {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.market-check {
+  border: 1px solid rgba(56, 189, 248, 0.2);
+  border-radius: var(--radius-sm);
+  background: rgba(14, 165, 233, 0.08);
+  padding: 12px;
+}
+
+.market-check.compact {
+  margin-top: 8px;
+  padding: 10px;
+}
+
+.market-check-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.market-check p {
+  margin: 0;
+  color: #dbeafe;
+  overflow-wrap: normal;
+  word-break: normal;
+}
+
+.market-check-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  margin-top: 10px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+  font-size: 12px;
+}
+
+@media (max-width: 980px) {
+  .exchange-section-head,
+  .exchange-load-more {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .exchange-ledger-scroll {
+    max-height: 560px;
+  }
+
+  .exchange-ledger-table {
+    min-width: 860px;
+  }
+}
+
+@media (max-width: 640px) {
+  .exchange-route-table {
+    min-width: 680px;
+  }
 }

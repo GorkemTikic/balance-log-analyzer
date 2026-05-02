@@ -4,8 +4,6 @@ import { TEXTS } from "@/lib/i18n";
 
 export default function StoryRaw({ lang }: StoryTabProps) {
   const T = TEXTS[lang];
-  const rawPreview =
-    "Diagnostics tab shows internal totals. Use Agent Audit for balance math and Narrative for user-facing text.";
 
   return (
     <div className="card" style={{ marginTop: 16 }}>
@@ -24,7 +22,7 @@ export default function StoryRaw({ lang }: StoryTabProps) {
           overflow: "auto"
         }}
       >
-        {rawPreview}
+        {T.rawHint}
       </pre>
     </div>
   );

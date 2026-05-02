@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { fmt, fmtTrim, fmtMoney, fmtSigned } from "./format";
+import { fmt, fmtTrim, fmtMoney, fmtSigned, fmtFinalForAsset } from "./format";
 
 describe("format.ts", () => {
   describe("fmtTrim", () => {
@@ -39,6 +39,10 @@ describe("format.ts", () => {
     it("formats zero", () => {
       expect(fmtMoney(0, "ETH")).toBe("0.00 ETH");
     });
+    it("falls back to full precision when toFixed(2) rounds tiny value to 0.00", () => {
+      expect(fmtMoney(-0.0005, "BNB")).toBe("-0.0005 BNB");
+      expect(fmtMoney(0.0001, "USDT")).toBe("+0.0001 USDT");
+    });
   });
 
   describe("fmtSigned", () => {
@@ -48,6 +52,24 @@ describe("format.ts", () => {
     it("adds minus sign for negative", () => {
       // fmtSigned uses U+2212 (width variant) which looks like "−"
       expect(fmtSigned(-5)).toBe("−5");
+    });
+  });
+
+  describe("fmtFinalForAsset", () => {
+    it("rounds USD-pegged stables to 8dp to strip float drift", () => {
+      // 17.10045262 with classic IEEE-754 drift
+      expect(fmtFinalForAsset(17.100452619999988, "USDT")).toBe("17.10045262");
+      expect(fmtFinalForAsset(17.100452619999988, "USDC")).toBe("17.10045262");
+      expect(fmtFinalForAsset(17.100452619999988, "BNFCR")).toBe("17.10045262");
+      expect(fmtFinalForAsset(17.100452619999988, "BFUSD")).toBe("17.10045262");
+    });
+    it("keeps full precision for volatile coins", () => {
+      // ETH balance with 12 decimals must not be rounded to 8
+      expect(fmtFinalForAsset(0.123456789012, "ETH")).toBe("0.123456789012");
+      expect(fmtFinalForAsset(0.000012345678, "BTC")).toBe("0.000012345678");
+    });
+    it("handles dust", () => {
+      expect(fmtFinalForAsset(1e-9, "USDT")).toBe("0.0000");
     });
   });
 });

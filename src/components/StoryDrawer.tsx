@@ -1,7 +1,7 @@
 // src/components/StoryDrawer.tsx
 import React, { useState } from "react";
 import { type Row } from "@/lib/story";
-import { TEXTS, type LocalLang } from "@/lib/i18n";
+import { LANG_CONFIG, TEXTS, type LocalLang } from "@/lib/i18n";
 
 import StoryNarrative from "./story/StoryNarrative";
 import StoryAudit from "./story/StoryAudit";
@@ -80,16 +80,11 @@ export default function StoryDrawer({
               onChange={(e) => setLang(e.target.value as LocalLang)}
               title={T.lang}
             >
-              <option value="en">English (UTC+0)</option>
-              <option value="tr">Türkçe (UTC+3)</option>
-              <option value="es">Español (UTC+0)</option>
-              <option value="pt">Português (UTC+0)</option>
-              <option value="vi">Tiếng Việt (UTC+7)</option>
-              <option value="ru">Русский (UTC+3)</option>
-              <option value="uk">Українська (UTC+2)</option>
-              <option value="ar">العربية (UTC+3)</option>
-              <option value="zh">中文 (UTC+8)</option>
-              <option value="ko">한국어 (UTC+9)</option>
+              {LANGUAGE_OPTIONS.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label} ({LANG_CONFIG[option.value].label})
+                </option>
+              ))}
             </select>
 
             {/* Close Button (X icon) */}
@@ -122,6 +117,19 @@ export default function StoryDrawer({
     </div>
   );
 }
+
+const LANGUAGE_OPTIONS: { value: LocalLang; label: string }[] = [
+  { value: "en", label: "English" },
+  { value: "tr", label: "Türkçe" },
+  { value: "es", label: "Español" },
+  { value: "pt", label: "Português" },
+  { value: "vi", label: "Tiếng Việt" },
+  { value: "ru", label: "Русский" },
+  { value: "uk", label: "Українська" },
+  { value: "ar", label: "العربية" },
+  { value: "zh", label: "中文" },
+  { value: "ko", label: "한국어" }
+];
 
 function TabBtn({ id, label, current, set }: { id: any; label: string; current: string; set: (v: any) => void }) {
   const active = current === id;
